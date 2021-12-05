@@ -27,6 +27,11 @@ shared (msg) actor class Store() {
     If you need access to the installer of an actor, 
     rewrite the actor declaration as a zero-argument actor class instead. 
 */
+    // Initialize a stable (persistent) array for authorized users
+    // of this canister smart contract.  For now, the only authorized user is 
+    // the one deploying the canister.  To utilize any function other than get(), 
+    // the principal of the user or other canister smart contract must be included
+    // in the following array.
     stable var contractOwners : [Principal] = [owner];
     type Result<T, E> = Result.Result<T, E>;
     let store = HashMap.HashMap<Text, Text>(
@@ -35,6 +40,8 @@ shared (msg) actor class Store() {
         Text.hash,
     );
 
+    // Put the specified Key & Value into our HashMap as a new {K, V} pair
+    // Overwrites an existing value if the key already exists
     public shared({caller}) func put(key : Text, value : Text) : async Result<Text, Text> {
         assert(owner == msg.caller);
         store.put(key, value);
@@ -48,6 +55,7 @@ shared (msg) actor class Store() {
         };   
     };
 
+    // Get the associated value for a specified key, if it exists in the HashMap
     public func get(key : Text) : async Result<Text, Text> {
         switch(store.get(key)) {
             case(null) {#err("There is no value stored for '" # key # "'.");};
@@ -61,8 +69,9 @@ shared (msg) actor class Store() {
         // code this to iterate through the hashmap and output ALL [K, V] pairs
     }
 
+    // Delete a specified key and the key's associated value from our HashMap, if it exists
     public shared({caller}) func delete(key : Text) : async Result<Text, Text> {
-        // Chose remove over delete for the confirmation of correct value deletion
+        // Chose remove() over delete() for the confirmation of correct value deletion
         assert(owner == msg.caller);
         switch(store.remove(key)) {
             case(null) {
@@ -74,9 +83,12 @@ shared (msg) actor class Store() {
         };
     };
 
+    // Test func that iterates through contractOwners and prints all Principal ids to console
     public shared({caller}) func getOwners() : async () {
         for(i in Iter.range(0, contractOwners.size()-1)){ Debug.print(Principal.toText(contractOwners[i])); };
     };
+
+    // wanted to test a function to add Principals to the default owner-only array
 /*
     public shared({caller}) func addOwner(newOwner : Text) : async () {
         //Debug.print(newOwner);
