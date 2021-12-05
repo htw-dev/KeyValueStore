@@ -1,0 +1,14 @@
+type Store = 
+ service {
+   addOwner: (text) -> ();
+   delete: (text) -> (Result);
+   get: (text) -> (Result);
+   getOwners: () -> ();
+   put: (text, text) -> (Result);
+ };
+type Result = 
+ variant {
+   err: text;
+   ok: text;
+ };
+service : () -> Store
