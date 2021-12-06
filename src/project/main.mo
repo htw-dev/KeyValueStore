@@ -86,33 +86,12 @@ shared (msg) actor class Store() {
 
     // Function that iterates through all keys in our 'store' HashMap, 
     // placing them into an array and sorting them by Text comparison.
-    // Returns an immutable, sorted [Text].
+    // Returns a sorted [Text].
     func storeToArray() : [Text] {
         var pairs : [Text] = Iter.toArray(store.keys());
-        var thawPairs = Array.thaw<Text>(pairs);
-        let sorting : Bool = false;
-        var i : Nat = 1;
+        var sortPairs = Array.sort<Text>(pairs, Text.compare);
         
-        while (i < pairs.size()){
-            Debug.print(Nat.toText(i));
-            switch(Text.less(thawPairs[i], thawPairs[i-1])) {
-                case(false){
-                    i += 1;
-                };
-                case(true){
-                    Debug.print(thawPairs[i]);
-                    Debug.print(thawPairs[i-1]);
-                    let temp = thawPairs[i-1];
-                    thawPairs[i-1] := thawPairs[i];
-                    thawPairs[i] := temp;
-                    if(i > 1){
-                        i -= 1;
-                    };
-                };
-            };   
-        };
-        var outPairs = Array.freeze<Text>(thawPairs);
-        return outPairs;
+        return sortPairs;
     };
 
     // Delete a specified key and the key's associated value from our HashMap, if it exists
