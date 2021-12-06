@@ -1,9 +1,8 @@
 type Store = 
  service {
-   addOwner: (text) -> ();
    delete: (text) -> (Result);
-   get: (text) -> (Result);
-   getOwners: () -> ();
+   get: (text) -> (Result) query;
+   getAll: (nat, nat) -> (text);
    put: (text, text) -> (Result);
  };
 type Result = 
