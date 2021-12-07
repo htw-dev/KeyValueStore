@@ -24,14 +24,9 @@ import Text "mo:base/Text";
 shared (msg) actor class Store() {
     let owner = msg.caller;
 
-	//Simple actor declarations do not let you access their installer. 
+    //Simple actor declarations do not let you access their installer. 
     //If you need access to the installer of an actor, 
     //rewrite the actor declaration as a zero-argument actor class instead. 
-
-    // Initialize a stable (persistent) array for authorized users
-    // of this canister smart contract.  For now, the only authorized user is 
-    // the one deploying the canister.  
-    //stable var contractOwners : [Principal] = [owner];
 
     let store = HashMap.HashMap<Text, Text>(
         0, 
@@ -67,27 +62,27 @@ shared (msg) actor class Store() {
     // Retrieve a number of key-value pairs by number per page, listed by page number.
     // First argument is how many results per page, second is which page you would like to view.
     public func getAll(itemsPer : Nat, pageNum : Nat) : async Text {
-        var sortedKeys = storeToArray();
-        var out : Text = "";
+        var sortedKeys = storeKeysToSortedArray();
+        var outputText : Text = "";
         for (i in Iter.range((itemsPer * (pageNum-1), (itemsPer*pageNum)-1))) {
             if(i > sortedKeys.size()-1) {
-                return out;
+                return outputText;
             };
             Debug.print(sortedKeys[i]);
             switch(store.get(sortedKeys[i])) {
                 case(null) { () };
                 case(?v){
-                    ( out #= sortedKeys[i] # ", " # v # "\n");
+                    ( outputText #= sortedKeys[i] # ", " # v # "\n" );
                 };
             };
         };
-        return out;
+        return outputText;
     };
 
     // Function that iterates through all keys in our 'store' HashMap, 
     // placing them into an array and sorting them by Text comparison.
     // Returns a sorted [Text].
-    func storeToArray() : [Text] {
+    func storeKeysToSortedArray() : [Text] {
         var pairs : [Text] = Iter.toArray(store.keys());
         var sortPairs = Array.sort<Text>(pairs, Text.compare);
         
@@ -107,14 +102,5 @@ shared (msg) actor class Store() {
             };
         };
     };
-
-    // Test func that iterates through contractOwners and prints all Principal ids to console
-    /*
-    public shared({caller}) func getOwners() : async () {
-        for(i in Iter.range(0, contractOwners.size()-1)){ 
-            Debug.print(Principal.toText(contractOwners[i])); 
-        };
-    };
-    */
 
 };
