@@ -63,11 +63,11 @@ shared (msg) actor class Store() {
     // First argument is how many results per page, second is which page you would like to view.
     public func getAll(itemsPer : Nat, pageNum : Nat) : async Text {
         var sortedKeys = storeKeysToSortedArray();
-        var outputText : Text = "";
+        var outputText : Text = "\n";
         for (i in Iter.range((itemsPer * (pageNum-1), (itemsPer*pageNum)-1))) {
             if(i > sortedKeys.size()-1) {
                 return outputText;
-            }
+            };
             switch(store.get(sortedKeys[i])) {
                 case(null) { () };
                 case(?v){
@@ -94,7 +94,7 @@ shared (msg) actor class Store() {
         assert(owner == msg.caller);
         switch(store.remove(key)) {
             case(null) {
-                #err("Failed to delete '" # key # "' and paired value.");
+                #err("Could not find '" # key # "' for deletion.");
             };
             case(? v){
                 #ok("'" # key # "' has been deleted successfully!");
