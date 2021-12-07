@@ -67,8 +67,7 @@ shared (msg) actor class Store() {
         for (i in Iter.range((itemsPer * (pageNum-1), (itemsPer*pageNum)-1))) {
             if(i > sortedKeys.size()-1) {
                 return outputText;
-            };
-            Debug.print(sortedKeys[i]);
+            }
             switch(store.get(sortedKeys[i])) {
                 case(null) { () };
                 case(?v){
